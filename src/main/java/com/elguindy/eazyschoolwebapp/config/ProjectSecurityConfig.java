@@ -16,7 +16,7 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf((csrf) -> csrf.disable())
+        http.csrf((csrf) -> csrf.ignoringRequestMatchers("/saveMsg"))
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/", "/home").permitAll()
                         .requestMatchers("/holidays/**").permitAll()
@@ -24,12 +24,14 @@ public class ProjectSecurityConfig {
                         .requestMatchers("/saveMsg").permitAll()
                         .requestMatchers("/courses").permitAll()
                         .requestMatchers("/about").permitAll()
-                        .requestMatchers("/assets/**").permitAll())
-                .formLogin(loginConfigurer -> loginConfigurer.loginPage("/login")
+                        .requestMatchers("/assets/**").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/logout").permitAll())
+                        .formLogin(loginConfigurer -> loginConfigurer.loginPage("/login")
                         .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true").permitAll())
-                .logout(logoutConfigurer -> logoutConfigurer.logoutSuccessUrl("/login?logout=true")
-                        .invalidateHttpSession(true).permitAll())
-                .httpBasic(Customizer.withDefaults());
+                        .logout(logoutConfigurer -> logoutConfigurer.logoutSuccessUrl("/login?logout=true") //no need for this line due to CSRF
+                             .invalidateHttpSession(true).permitAll())
+                        .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
