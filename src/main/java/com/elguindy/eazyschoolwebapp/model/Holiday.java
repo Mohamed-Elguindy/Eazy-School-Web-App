@@ -1,19 +1,23 @@
 package com.elguindy.eazyschoolwebapp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.lang.reflect.Type;
 
-@Getter
-@Setter
-@ToString
+
+
+@NoArgsConstructor
 @AllArgsConstructor
-public class Holiday {
-    String reason;
+@Data
+@Entity
+@Table(name = "holidays")
+public class Holiday extends BaseEntity{
+
+    @Id
     String day;
+
+    String reason;
+    @Enumerated(EnumType.STRING)
     Type type;
 
     public enum Type {

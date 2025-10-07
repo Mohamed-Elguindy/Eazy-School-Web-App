@@ -17,14 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
     @RequestMapping(value ="/login" , method = {RequestMethod.GET , RequestMethod.POST})
     public String displayLoginPage(@RequestParam(value="error" ,  required=false) String error,
-                                   @RequestParam (value="logout" ,  required=false) String logout
-            ,Model model) {
+                                   @RequestParam (value="logout" ,  required=false) String logout,
+                                   @RequestParam (value="register" ,  required=false) String register,
+            Model model) {
         String errorMessge = null;
         if (error != null) {
             errorMessge = "Invalid username and password";
         }
-        if (logout != null) {
+        else if (logout != null) {
             errorMessge = "You have been logged out successfully";
+        } else if (register !=null) {
+            errorMessge = "You have been registered successfully";
         }
         model.addAttribute("errorMessge", errorMessge);
         return "login.html";

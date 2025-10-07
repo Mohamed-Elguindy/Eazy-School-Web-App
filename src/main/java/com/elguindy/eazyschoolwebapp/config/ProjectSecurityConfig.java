@@ -1,5 +1,6 @@
 package com.elguindy.eazyschoolwebapp.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -16,8 +17,11 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf((csrf) -> csrf.ignoringRequestMatchers("/saveMsg"))
+        http.csrf((csrf) -> csrf.ignoringRequestMatchers("/saveMsg").ignoringRequestMatchers("/public/**"))
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").authenticated()
+                        .requestMatchers("/public/**").permitAll()
+                        .requestMatchers("/displayMessages").hasRole("ADMIN")
+                        .requestMatchers("/closeMsg/**").hasRole("ADMIN")
                         .requestMatchers("/", "/home").permitAll()
                         .requestMatchers("/holidays/**").permitAll()
                         .requestMatchers("/contact").permitAll()
@@ -30,7 +34,7 @@ public class ProjectSecurityConfig {
                         .formLogin(loginConfigurer -> loginConfigurer.loginPage("/login")
                         .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true").permitAll())
                         .logout(logoutConfigurer -> logoutConfigurer.logoutSuccessUrl("/login?logout=true") //no need for this line due to CSRF
-                             .invalidateHttpSession(true).permitAll())
+                        .invalidateHttpSession(true).permitAll())
                         .httpBasic(Customizer.withDefaults());
         return http.build();
     }
