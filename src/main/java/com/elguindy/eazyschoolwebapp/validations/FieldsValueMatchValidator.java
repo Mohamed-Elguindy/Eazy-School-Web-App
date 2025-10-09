@@ -6,9 +6,13 @@ import org.springframework.beans.BeanWrapperImpl;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class FieldsValueMatchValidator
         implements ConstraintValidator<FieldsValueMatch, Object> {
+
+
 
     private String field;
     private String fieldMatch;
@@ -26,7 +30,7 @@ public class FieldsValueMatchValidator
         Object fieldMatchValue = new BeanWrapperImpl(value)
                 .getPropertyValue(fieldMatch);
         if (fieldValue != null) {
-            return fieldValue.equals(fieldMatchValue);
+            return fieldValue.equals(fieldMatchValue) ;
         } else {
             return fieldMatchValue == null;
         }
