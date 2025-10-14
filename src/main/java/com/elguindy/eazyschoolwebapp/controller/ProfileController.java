@@ -27,7 +27,7 @@ public class ProfileController {
 
     @RequestMapping("/displayProfile")
     public ModelAndView displayProfile(Model model , HttpSession session) {
-        Person person = (Person) session.getAttribute("LoggedInPerson");
+        Person person = (Person) session.getAttribute("loggedInPerson");
         Profile profile = profileService.DisplayProfile(person);
         ModelAndView modelAndView = new ModelAndView("profile.html");
         modelAndView.addObject("profile", profile);
@@ -40,9 +40,9 @@ public class ProfileController {
         if (errors.hasErrors()) {
             return "profile.html";
         }
-        Person person = (Person) session.getAttribute("LoggedInPerson");
+        Person person = (Person) session.getAttribute("loggedInPerson");
         Person savedPerson = profileService.UpdateProfile(profile, person);
-        session.setAttribute("LoggedInPerson", savedPerson);
+        session.setAttribute("loggedInPerson", savedPerson);
         return "redirect:/displayProfile";
     }
 }
