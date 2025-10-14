@@ -7,6 +7,10 @@ import com.elguindy.eazyschoolwebapp.repositry.ContactRepositry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,7 +24,7 @@ import java.util.stream.StreamSupport;
 public class ContactService {
 
     @Autowired
-    private ContactRepositry contactRepositry;
+    private ContactRepositry contactRepository;
 
     private static Logger log = LoggerFactory.getLogger(contactController.class);
 
@@ -30,27 +34,30 @@ public class ContactService {
         contact.setStatus(EazySchoolConstants.OPEN);
        //contact.setCreatedBy(EazySchoolConstants.ANONYMOUS);
         //contact.setCreatedAt(LocalDateTime.now());
-        Contact savedContact = contactRepositry.save(contact);
+        Contact savedContact = contactRepository.save(contact);
         if( savedContact != null  && savedContact.getContactId()>0) {
             isSaved = true;
         }
         return isSaved;
     }
 
-    public List<Contact> findMsgsWithOpenStatus(){
-        List<Contact> contactMsgs = contactRepositry.findByStatus(EazySchoolConstants.OPEN);
-        return contactMsgs;
+    public Page<Contact> findMsgsWithOpenStatus(int pageNum,String sortField, String sortDir){
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize,
+                sortDir.equals("asc") ? Sort.by(sortField).ascending()
+                        : Sort.by(sortField).descending());
+        Page<Contact> msgPage = contactRepository.findByStatus(
+                EazySchoolConstants.OPEN,pageable);
+        return msgPage;
     }
 
     public boolean updateMsgStatus(int contactId){
         boolean isUpdated = false;
-        Optional<Contact> contact = contactRepositry.findById(contactId);
+        Optional<Contact> contact = contactRepository.findById(contactId);
         contact.ifPresent(contact1 -> {
             contact1.setStatus(EazySchoolConstants.CLOSE);
-           // contact1.setUpdatedBy(updatedBy);
-           // contact1.setUpdatedAt(LocalDateTime.now());
         });
-        Contact updatedContact = contactRepositry.save(contact.get());
+        Contact updatedContact = contactRepository.save(contact.get());
         if(null != updatedContact && updatedContact.getUpdatedBy()!=null) {
             isUpdated = true;
         }
